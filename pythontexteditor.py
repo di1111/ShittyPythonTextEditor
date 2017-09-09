@@ -1,31 +1,51 @@
 from tkinter import *
-from tkinter import filedialog
+
+import fileoperations
+
+has_saved = None
+save_location = None
 
 
-def save_as(none):
-    global text_box
 
-    text_box_contents = text_box.get("1.0", "end-1c")
+def does_nothing(*_):
+    pass
 
-    save_location = filedialog.asksaveasfilename(initialdir="/", filetypes=[("all files", "*.*")], title="Select file")
 
-    try:
-        file = open(save_location, "w+")
-        file.write(text_box_contents)
-        file.close()
-    except IOError:
-        print("exception while saving file | io error")
-    except BlockingIOError:
-        print("exception while saving file | blocking io")
-    except FileExistsError:
-        print("exception while saving file | file exists")
+def quit_editor(*_):
+    if fileoperations.does_textbox_contain_text(text_box):
+        fileoperations.save()
+    else:
+        tkinter.quit()
 
 
 tkinter = Tk("Text Editor")
 
 text_box = Text(tkinter)
 
-text_box.grid()
+text_box.pack(fill=BOTH, expand=YES)
 
-tkinter.bind("<Shift-Control-S>", save_as)
+menubar = Menu(tkinter)
+
+filemenu = Menu(menubar, tearoff=0)
+filemenu.add_command(label="Open", command=fileoperations.open_file)
+filemenu.add_command(label="Save", command=fileoperations.save)
+filemenu.add_command(label="Save As", command=fileoperations.save_as)
+filemenu.add_separator()
+filemenu.add_command(label="Exit", command=quit_editor)
+menubar.add_cascade(label="File", menu=filemenu)
+
+editmenu = Menu(menubar, tearoff=0)
+editmenu.add_command(label="Cut", command=does_nothing)
+editmenu.add_command(label="Copy", command=does_nothing)
+editmenu.add_command(label="Paste", command=does_nothing)
+menubar.add_cascade(label="Edit", menu=editmenu)
+
+helpmenu = Menu(menubar, tearoff=0)
+helpmenu.add_command(label="About", command=does_nothing)
+menubar.add_cascade(label="Help", menu=helpmenu)
+
+tkinter.bind("<Shift-Control-s>", fileoperations.save_as)
+tkinter.bind("<Control-s>", fileoperations.save)
+tkinter.bind("<Control-o>", fileoperations.open_file)
+tkinter.config(menu=menubar)
 tkinter.mainloop()
