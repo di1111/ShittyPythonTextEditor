@@ -1,6 +1,16 @@
 from tkinter import *
 from tkinter import filedialog
 
+text_box = None
+has_saved = None
+save_location = None
+
+
+def first_call(textbox, *_):
+    global text_box
+
+    text_box = textbox
+
 
 def save_as(*_):
     global text_box, has_saved, save_location
@@ -46,15 +56,25 @@ def save(*_):
 
 
 def open_file(*_):
-    global has_saved, save_location
+    global has_saved, save_location, text_box
 
     if does_textbox_contain_text(text_box):
         print('Text box already has text in it, aborting open file')
     else:
         save_location = filedialog.askopenfilename(initialdir="/", title="Select file", filetypes=(("text files", "*.txt"), ("all files", "*.*")))
 
-        file = open(save_location, "r+")
-        text_box_contents = file.read()
+        try:
+            file = open(save_location, "r+")
+            text_box_contents = file.read()
+            has_saved = True
+        except FileNotFoundError:
+            print('exception while opening file | file not found')
+        except IOError:
+            print('exception while opening file | io error')
+        except BlockingIOError:
+            print('exception while opening file | Blocking io error')
+        except FileExistsError:
+            print('exception while opening file | file exists error, this error should never occur')
         text_box.insert(END, text_box_contents)
         file.close()
     # Errors:

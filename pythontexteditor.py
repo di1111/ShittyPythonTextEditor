@@ -2,11 +2,6 @@ from tkinter import *
 
 import fileoperations
 
-has_saved = None
-save_location = None
-
-
-
 def does_nothing(*_):
     pass
 
@@ -23,6 +18,8 @@ tkinter = Tk("Text Editor")
 text_box = Text(tkinter)
 
 text_box.pack(fill=BOTH, expand=YES)
+
+fileoperations.first_call(text_box)
 
 menubar = Menu(tkinter)
 
